@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Lambda behind the scene</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="./style.css">
+
+<style type="text/css">
+  .code {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-left: 3px solid #f36d33;
+    color: #666;
+    page-break-inside: avoid;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 1.6em;
+    max-width: 100%;
+    overflow: auto;
+    padding: 1em 1.5em;
+    display: block;
+    word-wrap: break-word;
+  }
+</style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<main>
+<div class="triangle"></div>
+<div class="triangle-2"></div>
+<div class="triangle-3"></div>
+<div class="container">
+
+  <article>
+  <h1>How do lambda expressions really work in Java?</h1>
+  <div class="metadata">
+    <span class="author">by Vivek Soni 😊 </span>
+    <span class="date">06 November 2020</span>
+  </div>
+
+  <p class="highlightme">Prerequisites</p>
+  <p>Before we understand lambda with respect to JVM, it is needful that we address two basic questions here that will create a base for us to understand the lambda more quickly and effectively</p>
+
+  <p class="highlightme">What is a lambda expression?</p>
+  <p>In mathematics or in general, a lambda expression is a function that takes all combinations of input values and it generates an output value. In Java terms, lambdas can be understood as a kind of anonymous method with a more compact syntax that also allows the omission of modifiers, return type, and in some cases parameter types as well.</p>
+  <p>Syntax : <br>The basic syntax of a lambda is either</p>
+  <p class="code">(parameters) -> expression</p><p>or</p><p class="code">(parameters) -> { statements; }</p>
+  <p>Example :</p>
+  <p class="code">
+    1. (int x, int y) -> x + y                          // takes two integers and returns their sum<br>
+2. (x, y) -> x - y                                  // takes two numbers and returns their difference<br>
+3. () -> 42                                         // takes no values and returns 42<br>
+4. (String s) -> System.out.println(s)              // takes a string, prints its value to the console, and returns nothing<br> 
+5. x -> 2 * x                                       // takes a number and returns the result of doubling it<br>
+6. c -> { int s = c.size(); c.clear(); return s; }  // takes a collection, clears it, and returns its previous size<br>
+  </p>
+
+  <p class="highlightme">Why are lambda expressions being added to Java?</p>
+  <p>Lambda expressions are a popular feature of many modern programming languages. Amongst the different reasons for this, the most pressing one for the Java platform is that they make it easier to distribute processing of collections over multiple threads. For example, the forEach method on collections will take an instance of the Consumer interface and call its accept method for every element:</p>
+  <p class="code">interface Consumer<T> { void accept(T t); }</p>
+  <p>Suppose that we want to use forEach to transpose the x and y co-ordinates of every element in a list of java.awt.Point. Using an anonymous inner class implementation of Consumer we would pass in the transposition function like this:</p>
+  <pre class="code">
+    pointList.forEach(new Consumer&lt;Point&gt;() { 
+        public void accept(Point p) { 
+            p.move(p.y, p.x);
+        } 
+    });
+  </pre>
+  <p>Using a lambda, however, the same effect can be achieved much more concisely:</p>
+  <p class="code">pointList.forEach(p -> p.move(p.y, p.x));</p>
+
+  <p class="highlightme">Decoding how lambda expressions work in JVM?</p>
+  <p>What does a lambda expression look like inside Java code and inside the JVM? It is obviously some type of value, and Java permits only two sorts of values: primitive types and object references. Lambdas are obviously not primitive types, so a lambda expression must therefore be some sort of expression that returns an object reference.</p>
+  <p>Let’s look at an example:</p>
+  <pre class="code">
+    public class LambdaExample {
+      private static final String TOPSECRET = "Waffles are tasty!";
+
+      public static void main(String[] args) throws Exception {
+          Runnable r = () -> System.out.println(TOPSECRET);
+          Thread t = new Thread(r);
+          t.start();
+          t.join();
+      }
+    }
+  </pre>
+  <p>
+    Programmers who are familiar with inner classes might guess that the lambda is really just syntactic sugar for an anonymous implementation of Runnable. However, compiling the above class generates a single file: LambdaExample.class. There is no additional class file for the inner class.
+  </p>
+  <p>
+    This means that lambdas are not inner classes; rather, they must be some other mechanism. In fact, decompiling the bytecode via javap -c -p reveals two things. First is the fact that the lambda body has been compiled into a private static method that appears in the main class:
+  </p>
+  <pre class="code">
+    private static void lambda$main$0();
+    Code:
+       0: getstatic     #7        // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: ldc           #9        // String Waffles are tasty!
+       5: invokevirtual #10       // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       8: return
+  </pre>
+  <p>
+    You might guess that the signature of the private body method matches that of the lambda, and indeed this is the case. A lambda such as this
+  </p>
+  <pre class="code">
+    public class StringFunction {
+      public static final Function<String, Integer> fn = s -> s.length();
+    }
+  </pre>
+  <p>
+    will produce a body method such as this, which takes a string and returns an integer, matching the signature of the interface method
+  </p>
+  <pre class="code">
+    private static java.lang.Integer lambda$static$0(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokevirtual #2        // Method java/lang/String.length:()I
+       4: invokestatic  #3        // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       7: areturn
+  </pre>
+  <p>
+    The second thing to notice about the bytecode is the form of the main method:
+  </p>
+  <pre class="code">
+    public static void main(java.lang.String[]) throws java.lang.Exception;
+    Code:
+       0: invokedynamic #2,  0         // InvokeDynamic #0:run:()Ljava/lang/Runnable;
+       5: astore_1
+       6: new           #3             // class java/lang/Thread
+       9: dup
+      10: aload_1
+      11: invokespecial #4             // Method java/lang/Thread."&lt;init&gt;":(Ljava/lang/Runnable;)V
+      14: astore_2
+      15: aload_2
+      16: invokevirtual #5             // Method java/lang/Thread.start:()V
+      19: aload_2
+      20: invokevirtual #6             // Method java/lang/Thread.join:()V
+      23: return
+  </pre>
+  <p>
+    Notice that the bytecode begins with an invokedynamic call. This opcode was added to Java with version 7 (and it is the only opcode ever added to JVM bytecode).
+  </p>
+  <p>
+    The most straightforward way to understand the invokedynamic call in this code is to think of it as a call to an unusual form of the factory method. The method call returns an instance of some type that implements Runnable. The exact type is not specified in the bytecode and it fundamentally does not matter.
+  </p>
+  <p>
+    The actual type does not exist at compile time and will be created on demand at runtime. To better explain this, We’ll discuss three mechanisms that work together to produce this capability: call sites, method handles, and bootstrapping. However detail explanation of these three is out of the scope here, still we'll take a glimpse of them.
+  </p>
+
+  <p class="highlightme">Call sites</p>
+  <p>A location in the bytecode where a method invocation instruction occurs is known as a call site.</p>
+  <p>Java bytecode has traditionally had four opcodes that handle different cases of method invocation: static methods, “normal” invocation (a virtual call that may involve method overriding), interface lookup, and “special” invocation (for cases where override resolution is not required, such as superclass calls and private methods).</p>
+  <p>Dynamic invocation goes much further than that by offering a mechanism through which the decision about which method is actually called is made by the programmer, on a per-call site basis.</p>
+  <p>Note: Some invokedynamic call sites are effectively just lazily computed, and the method they target will never change after they have been executed the first time. This is a very common use case for ConstantCallSite, and this includes lambda expressions. This means that a nonconstant call site can have many different method handles as its target over the lifetime of a program.</p>
+
+  <p class="highlightme">Method handles</p>
+  <p>Reflection is a powerful technique for doing runtime tricks, but it has a number of design flaws (<a href="https://www.merriam-webster.com/dictionary/twenty-twenty%20hindsight">hindsight is 20/20</a>, of course), and it is definitely showing its age now. One key problem with reflection is performance, especially since reflective calls are difficult for the just-in-time (JIT) compiler to inline.</p>
+  <p>This is bad, because inlining is very important to JIT compilation in several ways, not the least of which is because it’s usually the first optimization applied and it opens the door to other techniques (such as escape analysis and dead code elimination).</p>
+  <p>A second problem is that reflective calls are linked every time the call site of Method.invoke() is encountered. That means, for example, that security access checks are performed. This is very wasteful because the check will typically either succeed or fail on the first call, and if it succeeds, it will continue to do so for the life of the program. Yet, reflection does this linking over and over again. Thus, reflection incurs a lot of unnecessary cost by relinking and wasting CPU time.</p>
+  <p>To solve these problems (and others), Java 7 introduced a new API, java.lang.invoke, which is often casually called method handles due to the name of the main class it introduced.</p>
+  <p>A method handle (MH) is Java’s version of a type-safe function pointer. It’s a way of referring to a method that the code might want to call, similar to a Method object from Java reflection. The MH has an invoke() method that actually executes the underlying method, in just the same way as reflection.</p>
+
+  <p class="highlightme">Bootstrapping</p>
+  <p>The first time each specific invokedynamic call site is encountered in the bytecode instruction stream, the JVM doesn’t know which method it targets. In fact, there is no call site object associated with the instruction.</p>
+  <p>The call site needs to be bootstrapped, and the JVM achieves this by running a bootstrap method (BSM) to generate and return a call site object.</p>
+  <p>Each invokedynamic call site has a BSM associated with it, which is stored in a separate area of the class file. These methods allow user code to programmatically determine linkage at runtime.</p>
+
+  <p class="highlightme">Conclusion</p>
+  <p>JVM's implementation of lambda expressions is one of the most complex platform features we’ll encounter, because it is deep into language implementer territory.</p>
+  <p>Along the way, We’ve discussed invokedynamic and the method handles API. These are two key techniques that are major parts of the modern JVM platform. Both of these mechanisms are seeing increased use across the ecosystem; for example, invokedynamic has been used to implement a new form of string concatenation in Java 9 and above.</p>
+  <p>Understanding these features gives you key insight into the innermost workings of the platform and the modern frameworks upon which Java applications rely.</p>
+
+  <hr>
+  <p style="float: right;">Source : Java Magazine October 2020</p>
+
+
+</article>
+</div>
+</main>
+<!-- partial -->
+
+</body>
+</html>
