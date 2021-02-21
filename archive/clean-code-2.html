@@ -38,7 +38,7 @@
   <h1>The art of software craftsmanship - 2</h1>
   <div class="metadata">
     <span class="author">by Vivek Soni 😊 </span>
-    <span class="date">Lorem Ipsum</span>
+    <span class="date">21 February 2021</span>
   </div>
 
   <p class="highlightme">Meaningful Names</p>
@@ -52,7 +52,7 @@
     <b style="font-weight: bold;">Don't Be Cute : </b><br>
     If names are too clever, they will be memorable only to people who share the author’s sense of humor, and only as long as these people remember the joke. Will they know what the function named HolyHandGrenade is supposed to do? Sure, it’s cute, but maybe in this case DeleteItems might be a better name. Choose clarity over entertainment value.<br><i style="font-style: italic;">Say what you mean. Mean what you say.</i><br><br>
     <b style="font-weight: bold;">Final Words : </b><br>
-    The hardest thing about choosing good names is that it requires good descriptive skills and a shared cultural background. This is a teaching issue rather than a technical, business, or management issue. As a result many people in this field don’t learn to do it very well.
+    The hardest thing about choosing good names is that it requires good descriptive skills and shared cultural background. This is a teaching issue rather than a technical, business, or management issue. As a result, many people in this field don’t learn to do it very well.
   </p>
 
   <p class="highlightme">Functions</p>
@@ -78,7 +78,7 @@
     </pre>
   </p>
   <p>
-    Above code is refactored code, priorly it was like depicted below, now read that too and take an honest opinion of yourself if you understanding it or not.
+    The above code is refactored code, priorly it was like depicted below, now read that too and take an honest opinion of yourself if you understanding it or not.
     <pre class="code">
       public static String testableHtml(
             PageData pageData,
@@ -148,12 +148,12 @@
     </pre>
   </p>
   <p>
-    The point I want to convey here is that, this is the power of functions.
+    The point I want to convey here is that this is the power of functions.
   </p>
 
   <p>
     <b style="font-weight: bold;">Small! : </b><br>
-    The first rule of functions is that they should be small. The second rule of functions is that they should be smaller than that. This is not an assertion that we can justify. The author who has nearly 40 years of experiance in programming, who has written functions which are 3000 lines long and functions which are of 20 to 30 lines long, Author says that from long trial and error I came to one conclusion that functions should be very small. How short should your functions be? They should usually be shorter than Listing 1.1 Indeed, Listing 1.1 should really be shortened to Listing 1.3
+    The first rule of functions is that they should be small. The second rule of functions is that they should be smaller than that. This is not an assertion that we can justify. The author has nearly 40 years of experience in programming, who has written functions that are 3000 lines long and functions that are 20 to 30 lines long, Author says that from long trial and error I came to one conclusion that functions should be very small. How short should your functions be? They should usually be shorter than Listing 1.1 Indeed, Listing 1.1 should be shortened to Listing 1.3
     <pre class="code">
       public static String renderPageWithSetupsAndTeardowns(
             PageData pageData, boolean isSuite) throws Exception {
@@ -181,12 +181,12 @@
 
   <p>
     <b style="font-weight: bold;">Function Arguments : </b><br>
-    The ideal number of arguments for a function is zero (niladic). Next comes one (monadic), followed closely by two (dyadic). Three arguments (triadic) should be avoided where possible. More than three (polyadic) requires very special justification—and then shouldn’t be used anyway.
+    The ideal number of arguments for a function is zero (niladic). Next comes one (monadic), followed closely by two (dyadic). Three arguments (triadic) should be avoided where possible. More than three (polyadic) require very special justification—and then shouldn’t be used anyway.
   </p>
 
   <p>
     <b style="font-weight: bold;">Argument Objects : </b><br>
-    When a function seems to need more than two or three arguments, it is likely that some of those arguments ought to be wrapped into a class of their own. Consider, for example, the difference between the two following declarations:
+    When a function seems to need more than two or three arguments, some of those arguments likely ought to be wrapped into a class of their own. Consider, for example, the difference between the two following declarations:
     <pre class="code">
       Circle makeCircle(double x, double y, double radius);
       Circle makeCircle(Point center, double radius);
@@ -196,8 +196,8 @@
 
   <p>
     <b style="font-weight: bold;">Have No Side Effects : </b><br>
-    Side effects are lies. Your function promises to do one thing, but it also does other hidden things. Sometimes it will make unexpected changes to the variables of its own class. Sometimes it will make them to the parameters passed into the function or to system globals. In either case they are devious and damaging mistruths that often result in strange temporal couplings and order dependencies.<br>
-    Consider, for example, the seemingly innocuous function in Listing 2.1. This function uses a standard algorithm to match a userName to a password. It returns true if they match and false if anything goes wrong. But it also has a side effect. Can you spot it?
+    Side effects are lies. Your function promises to do one thing, but it also does other hidden things. Sometimes it will make unexpected changes to the variables of its class. Sometimes it will take them to the parameters passed into the function or to system globals. In either case, they are devious and damaging mistruths that often result in strange temporal couplings and order dependencies.<br>
+    Consider, for example, the seemingly innocuous function in Listing 2.1. This function uses a standard algorithm to match a userName to a password. It returns true if they match and false if anything goes wrong. But it also has side effects. Can you spot it?
     <pre class="code">
       public class UserValidator {
         private Cryptographer cryptographer;
@@ -221,7 +221,14 @@
     The side effect is the call to Session.initialize(), of course. The checkPassword function, by its name, says that it checks the password. The name does not imply that it initializes the session. So a caller who believes what the name of the function says runs the risk of erasing the existing session data when he or she decides to check the validity of the user.
   </p>
   <p>
-    This side effect creates a temporal coupling. That is, checkPassword can only be called at certain times (in other words, when it is safe to initialize the session). If it is called out of order, session data may be inadvertently lost. Temporal couplings are confusing, especially when hidden as a side effect. If you must have a temporal coupling, you should make it clear in the name of the function. In this case we might rename the function checkPasswordAndInitializeSession, though that certainly violates “Do one thing.”
+    This side effect creates a temporal coupling. That is, checkPassword can only be called at certain times (in other words, when it is safe to initialize the session). If it is called out of order, session data may be inadvertently lost. Temporal couplings are confusing, especially when hidden as a side effect. If you must have a temporal coupling, you should make it clear in the name of the function. In this case, we might rename the function checkPasswordAndInitializeSession, though that certainly violates “Do one thing.”
+  </p>
+
+  <p>
+    <b style="font-weight: bold;">How do we write functions that people love? : </b><br/>
+    Writing software is like any other kind of writing. When you write a paper or an article, you get your thoughts down first, then you massage it until it reads well. The first draft might be clumsy and disorganized, so you wordsmith it and restructure it and refine it until it reads the way you want it to read.
+    <p>When I write functions, they come out long and complicated. They have lots of indenting and nested loops. They have long argument lists. The names are arbitrary, and there is duplicated code. But I also have a suite of unit tests that cover every one of those clumsy lines of code. </p>
+    <p>So then we should massage and refine that code, splitting out functions, changing names, eliminating duplication. We should shrink the methods and reorder them. Sometimes we break out whole classes, all the while keeping the tests passing. In the end, we wind up with functions that follow the rules I’ve laid down in this chapter. We don’t write them that way to start. We don’t think anyone could.</p>
   </p>
 
   <hr>
