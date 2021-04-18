@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>The art of Software Craftmanship part - 2</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="./style.css">
+
+<style type="text/css">
+  .code {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-left: 3px solid #f36d33;
+    color: #666;
+    page-break-inside: avoid;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 1.6em;
+    max-width: 100%;
+    overflow: auto;
+    padding: 1em 1.5em;
+    display: block;
+    word-wrap: break-word;
+  }
+</style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<main>
+<div class="triangle"></div>
+<div class="triangle-2"></div>
+<div class="triangle-3"></div>
+<div class="container">
+
+  <article>
+  <h1>The art of software craftsmanship - 3</h1>
+  <div class="metadata">
+    <span class="author">by Vivek Soni 😊 </span>
+    <span class="date">15 March 2021</span>
+  </div>
+
+  <p class="highlightme">Comments</p>
+  <p>
+    <b style="font-weight: bold;">Bad Comments : </b><br>
+    The proper use of comments is to compensate for our failure to express ourself in code. Note that we used the word failure. I meant it. Comments are always failures. We must have them because we cannot always figure out how to express ourselves without them, but their use is not a cause for celebration.
+    <br><br>
+    There are certainly times when code makes a poor vehicle for explanation. Unfortunately, many programmers have taken this to mean that code is seldom, if ever, a good means for explanation. This is patently false. Which would you rather see? This:
+      <pre class="code">
+        // Check to see if the employee is eligible for full benefits
+          if ((employee.flags & HOURLY_FLAG) && 
+          (employee.age > 65)) 
+      </pre>
+      Or this?<br/><br/>
+      <pre class="code">
+        if (employee.isEligibleForFullBenefits())
+      </pre>
+  </p>
+
+  <p>
+    <b style="font-weight: bold;">Good Comments : </b><br>
+    Some comments are necessary or beneficial. We’ll look at a few that I consider worthy of the bits they consume. Keep in mind, however, that the only truly good comment is the comment you found a way not to write. Sometimes a comment goes beyond just useful information about the implementation and provides the intent behind a decision.
+    <pre class="code">
+    //This is our best attempt to get a race condition 
+    //by creating large number of threads.
+    for (int i = 0; i < 25000; i++) {
+        WidgetBuilderThread widgetBuilderThread = 
+        new WidgetBuilderThread(widgetBuilder, text, parent, failFlag);
+        Thread thread = new Thread(widgetBuilderThread);
+        thread.start();
+      }
+      assertEquals(false, failFlag.get());
+    }      
+    </pre>
+  </p>
+
+  <p class="highlightme">Objects and Data Structures</p>
+  <p>
+    Consider, for example, the procedural shape example in Listing 3-1. The Geometry class operates on the three shape classes. The shape classes are simple data structures without any behavior. All the behavior is in the Geometry class.
+    <pre class="code">
+    public class Square {
+      public Point topLeft;
+      public double side;
+    }
+    public class Rectangle {
+      public Point topLeft;
+      public double height;
+      public double width;
+    }
+    public class Circle {
+      public Point center;
+      public double radius;
+    }
+    public class Geometry {
+      public final double PI = 3.141592653589793;
+      public double area(Object shape) throws NoSuchShapeException {
+        if (shape instanceof Square) {
+          Square s = (Square) shape;
+          return s.side * s.side;
+        } else if (shape instanceof Rectangle) {
+          Rectangle r = (Rectangle) shape;
+          return r.height * r.width;
+        } else if (shape instanceof Circle) {
+          Circle c = (Circle) shape;
+          return PI * c.radius * c.radius;
+        }
+        throw new NoSuchShapeException();
+      }
+    }
+    <b style="font-weight: bold; float: right;">Listing 3-1</b>
+    </pre>
+  </p>
+  <p>
+    Now consider the object-oriented solution in Listing 3-2. Here the area() method is polymorphic. No Geometry class is necessary. So if I add a new shape, none of the existing functions are affected, but if I add a new function all of the shapes must be changed!
+    <pre class="code">
+    public class Square implements Shape {
+      private Point topLeft;
+      private double side;
+      public double area() {
+        return side * side;
+      }
+    }
+    public class Rectangle implements Shape {
+      private Point topLeft;
+      private double height;
+      private double width;
+      public double area() {
+        return height * width;
+      }
+    }
+    public class Circle implements Shape {
+      private Point center;
+      private double radius;
+      public final double PI = 3.141592653589793;
+      public double area() {
+        return PI * radius * radius;
+      }
+    }
+    <b style="font-weight: bold; float: right;">Listing 3.2</b>
+    </pre>
+  </p>
+  <p>
+    <i style="font-style: italic;">Procedural code (code using data structures) makes it easy to add new functions without changing the existing data structures. OO code, on the other hand, makes it easy to add new classes without changing existing functions.</i>
+  </p>
+
+  <p>
+    <b style="font-weight: bold;">Train Wrecks : </b><br>
+    <pre class="code">
+  final String outputDir = ctxt.getOptions().getScratchDir().getAbsolutePath();
+    </pre>
+    <p>
+    This kind of code is often called a train wreck because it look like a bunch of coupled train cars. Chains of calls like this are generally considered to be sloppy style and should be avoided. It is usually best to split them up as follows:<br>
+    </p>
+    <pre class="code">
+    Options opts = ctxt.getOptions();
+    File scratchDir = opts.getScratchDir();
+    final String outputDir = scratchDir.getAbsolutePath();
+    </pre>
+  </p>
+
+  <p class="highlightme">Error Handling</p>
+  <p>
+  <b style="font-weight: bold;">Don't Return Null</b><br>
+  <pre class="code">
+    public void registerItem(Item item) {
+      if (item != null) {
+        ItemRegistry registry = peristentStore.getItemRegistry();
+        if (registry != null) {
+          Item existing = registry.getItem(item.getID());
+          if (existing.getBillingPeriod().hasRetailOwner()) {
+            existing.register(item);
+          }
+        }
+      }
+    }    
+  </pre>
+  <p>If you work in a code base with code like this, it might not look all that bad to you, but it is bad! When we return null, we are essentially creating work for ourselves and foisting problems upon our callers. All it takes is one missing null check to send an application spinning out of control.<br><br>In many cases, special case objects are an easy remedy. Imagine that you have code like this:</p>
+  <pre class="code">
+    List < Employee > employees = getEmployees();
+    if (employees != null) {
+      for (Employee e: employees) {
+        totalPay += e.getPay();
+      }
+    }    
+  </pre>
+  <p>
+  Right now, getEmployees can return null, but does it have to? If we change getEmployee so that it returns an empty list, we can clean up the code: </p>
+  </p>
+  <pre class="code">
+  List < Employee > employees = getEmployees();
+  for (Employee e: employees) {
+    totalPay += e.getPay();
+  }    
+  </pre>
+  <p>
+    Fortunately, Java has Collections.emptyList(), and it returns a predefined immutable list that we can use for this purpose:
+  </p>
+  <pre class="code">
+    public List < Employee > getEmployees() {
+      if (..there are no employees..)
+        return Collections.emptyList();
+    }    
+  </pre>
+
+  <p>
+    <b style="font-weight: bold;">Conclusion : </b><br> Clean code is readable, but it must also be robust. These are not conflicting goals. We can write robust clean code if we see error handling as a separate concern, something that is viewable independently of our main logic. To the degree that we are able to do that, we can reason about it independently, and we can make great strides in the maintainability of our code.    
+  </p>
+  
+  <hr>
+  <p style="float: right;">Source : Clean Code : A Handbook of Agile Software by Martin Fowler</p>
+
+
+</article>
+</div>
+</main>
+<!-- partial -->
+
+</body>
+</html>
