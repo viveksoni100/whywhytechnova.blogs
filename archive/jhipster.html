@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Bootstrap a full-stack application in 10 minutes using Java Hipster</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="./style.css">
+
+<style type="text/css">
+  .code {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-left: 3px solid #f36d33;
+    color: #666;
+    page-break-inside: avoid;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 1.6em;
+    max-width: 100%;
+    overflow: auto;
+    padding: 1em 1.5em;
+    display: block;
+    word-wrap: break-word;
+  }
+</style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<main>
+<div class="triangle"></div>
+<div class="triangle-2"></div>
+<div class="triangle-3"></div>
+<div class="container">
+
+  <article>
+  <h1>Bootstrap a full-stack application in 10 minutes using Java Hipster</h1>
+  <div class="metadata">
+    <span class="author">by Vivek Soni 😊 </span>
+    <span class="date">24 July 2022</span>
+  </div>
+
+  <p class="highlightme">What is JHipster?</p>
+
+  <p>JHipster is a development platform to quickly generate, develop, and deploy modern web applications and microservice architectures. We support many frontend technologies, including Angular, React, and Vue. We even have mobile app support for Ionic and React Native! On the backend, we support Spring Boot (with Java or Kotlin), Micronaut, Quarkus, Node.js, and .NET. For deployment, we embrace cloud native principles with Docker and Kubernetes. Deployment support exists for AWS, Azure, Cloud Foundry, Google Cloud Platform, Heroku, and OpenShift.</p>
+
+  <p class="highlightme">Prerequisites</b></p>
+  <ol>
+    <li><p>1. Install Node.js from http://nodejs.org</p></li>
+    <li><p>2. Install Yarn from https://yarnpkg.com/en/docs/install</p></li>
+    <li><p>3. Yeoman (command: yarn global add yo)</p></li>
+    <li><p>4. JHipster (command: yarn global add generator-jhipster)</p></li>
+  </ol><br>
+
+
+  <p class="highlightme">Let's get started!</p>
+
+  <p><b style="font-weight: bold;">before we start let me tell you one thing, jhipster boosted application will required java 11 or higher and maven 3.8.5 or higher, otherwise it won't work.</b></p>
+
+  <p><b style="font-weight: bold;">open your console and hit jhipster or yo jhipster</b></p>
+
+  <!-- titale and meta tag img -->
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/1.png" class="responsive"></center>
+  <br /><br />
+  
+  <p>later we need to fill the form by giving answers to jhipster application console regarding our technology preference, like what technology do we need for front-end or back-end etc. i've listed sample answers below.</p><br>
+  > Which type of application would you like to create? : Gateway application (means microservice gateway application)<br>
+  > What is the base name of your application? : jhipsterdemo<br>
+  > As you are running in a microservice architecture, on which port would like your server to run? it should be unique to avoid port conflicts : 9090<br>
+  > What is your default java package name : com.vivek.jhipster.demo<br>
+  > Which service discovery server do you want to user? : No service discovery (you can use eureka or other service discovery if you want)<br>
+  > Which type of authentication would you like to use? : JWT (you can also use OAuth 2)<br>
+  > Which type of database would you like to use? : MySQL<br>
+  > Which cache do you want to use? : Ehcache<br>
+  > Do you want to user Hibernate 2nd level cache? n<br>
+  > Would you like to use Maven or Gradle for building the backend? : Maven<br>
+  > Which other technologies would you liketo user? : Elasticsearch<br>
+  > Which framework would you like to use for the client? : Angular<br>
+  > Do you wnat to generate the admin UI? : y<br>
+  > Would you like to use a Bootswatch theme? : Default JHipster<br>
+  > Would you like to enable internationalization support? : n<br>
+  > Please choose the native language of the application : English<br>
+  > Beside JUnit and JTest, which testing frameworks would you like to use? : Gatling<br>
+  > Would you liek to install other generators from the JHipster marketplace? : n<br><br>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/2.png" class="responsive"></center>
+  <br /><br />
+
+  <p>and boom! our application will get up and running by itself with a proper technology skeleton. NOTE: this process will take 5-10 minutes depending on your internet speed.</p>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/3.png" class="responsive"></center>
+  <br /><br />
+
+  <p class="highlightme">Setting up front-end (Angular side) application</p>
+  
+  <p>hit npm start in the console</p>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/4.png" class="responsive"></center>
+  <br /><br />
+
+  <p>After these steps go to browser and access your application on localhost:4200, it will look like below given screen.</p>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/5.png" class="responsive"></center>
+  <br /><br />
+
+  <p class="highlightme">Setting up back-end (Springboot side) application</p>
+
+  <p>Our front-end is up and running now, configure our back-end in order to use the functionalities.</p>
+  <p>again open console and hit the command: mvn install</p>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/6.png" class="responsive"></center>
+  <br /><br />
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/8.png" class="responsive"></center>
+  <br /><br />
+
+  <p>now go to target folder and run the war file using command: java -jar jhipsterdemo-0.0.1-SNAPSHOT.war</p>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/9.png" class="responsive"></center>
+  <br /><br />
+
+  <p class="highlightme">Setting up database (MySQL) in the application</p>
+
+  <p>go to /home/vivek/Git/JHipster_Learning/src/main/resources/config/application.yml and fill database details as shown below, and re-run the war file. </p>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/10.png" class="responsive"></center>
+  <br /><br />
+
+  <p>As we are connected with database now, we can do the register and sign-in and can check the default fetures given to bootstrap our application, i've sign in as a default credential which is admin, admin for Administrator and checked the swagger API, you can also check other functionalities such as metrics, health, configuration, user management etc.</p>
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/11.png" class="responsive"></center>
+  <br /><br />
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/12.png" class="responsive"></center>
+  <br /><br />
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/13.png" class="responsive"></center>
+  <br /><br />
+
+  <center><img width="800" height="450" src="https://raw.githubusercontent.com/viveksoni100/images.blogs/master/jhipster/14.png" class="responsive"></center>
+  <br /><br />
+
+  <hr>
+  <p style="float: right;">Source : <a href="https://www.jhipster.tech/">https://www.jhipster.tech/</a></p>
+
+</article>
+</div>
+</main>
+<!-- partial -->
+
+</body>
+</html>
